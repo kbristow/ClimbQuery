@@ -9,20 +9,23 @@ output = open("BovenQuery.txt", "w")
 
 grade_reqs = []
 
-grade_reqs += [RouteRequirement(minimum = 15, maximum = 18, styles = ["Sport"])]
-grade_reqs += [RouteRequirement(minimum = 18, maximum = 19, styles = ["Sport"])]
-grade_reqs += [RouteRequirement(minimum = 19, maximum = 21, styles = ["Sport"])]
-grade_reqs += [RouteRequirement(minimum = 21, maximum = 23, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 14, maximum = 17, star_requirement = 2, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 18, maximum = 19, star_requirement = 2, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 20, maximum = 21, star_requirement = 2, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 22, maximum = 23, star_requirement = 2, styles = ["Sport"])]
 
-# grade_reqs += [RouteRequirement(minimum = 14, maximum = 17, styles = ["Sport", "Trad"])]
-# grade_reqs += [RouteRequirement(minimum = 18, maximum = 20, styles = ["Sport", "Trad"])]
-# grade_reqs += [RouteRequirement(minimum = 20, maximum = 20, styles = ["Sport", "Trad"])]
-# grade_reqs += [RouteRequirement(minimum = 21, maximum = 23, styles = ["Sport", "Trad"])]
+# grade_reqs += [RouteRequirement(minimum = 14, maximum = 17, star_requirement = 2, styles = ["Sport", "Trad"])]
+# grade_reqs += [RouteRequirement(minimum = 18, maximum = 20, star_requirement = 2, styles = ["Sport", "Trad"])]
+# grade_reqs += [RouteRequirement(minimum = 20, maximum = 20, star_requirement = 2, styles = ["Sport", "Trad"])]
+# grade_reqs += [RouteRequirement(minimum = 21, maximum = 23, star_requirement = 2, styles = ["Sport", "Trad"])]
+
+star_reqs = []
+star_reqs += [StarRequirement(star_count = 4, route_count = 1)]
 
 
 crag_requirement = CragRequirement(crags = ["The Wonderland Crags"])
 
-ranges = findRouteRanges(5, grade_reqs, crag_requirement, remove_non_valid = True)
+ranges = findRouteRanges(5, grade_reqs, crag_requirement, star_requirements = star_reqs, remove_non_valid = True)
 
 for i in range(0, len(ranges)):
     route_range = ranges[i]

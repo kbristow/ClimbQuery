@@ -23,13 +23,16 @@ class Route(object):
         return self.description.encode("utf-8")
 
 class RouteRequirement(object):
-    def __init__(self, minimum = 0, maximum = 50, styles = []):
+    def __init__(self, minimum = 0, maximum = 50, star_requirement = 0,styles = []):
         self.minimum = minimum
         self.maximum = maximum
+        self.star_requirement = star_requirement
         self.styles = styles
 
     def routeValid(self, route):
         if not self.styles == [] and route.style not in self.styles:
+            return False
+        if self.star_requirement > route.stars:
             return False
         if self.minimum <= route.grade and self.maximum >= route.grade:
             return True
@@ -50,6 +53,18 @@ class CragRequirement(object):
         return crag.sub_area in self.sub_areas or crag.area in self.areas or crag.crag in self.crags
 
 
+class StarRequirement(object):
+    def __init__(self, star_count, route_count = 1):
+        self.route_count = route_count
+        self.star_count = star_count
+
+    def validRange(self, valid_climbs):
+        validRoutes = 0
+        for route in valid_climbs:
+            if route.stars >= self.star_count:
+                validRoutes += 1
+        
+        return validRoutes >= self.route_count
 
 crag_list = [
     Crag("The Wonderland Crags", "Tranquilitas Crag", "Als Bells Area"),
@@ -108,7 +123,7 @@ crag_list = [
     Crag("Sport Valley Crags", "Waterval Onder " + u'\u2014' + " Luilekker Crags", ""),
     Crag("Sport Valley Crags", "Waterval Onder " + u'\u2014' + " The Aloes", "")
 ]
-
+ 
 crags = {}
 
 for crag in crag_list:
@@ -160,8 +175,21 @@ def getRange(range_length, routes, index):
             break
     return range_routes
 
-def validateRange(route_range, required_grades):
-    found_grade = {}
+def getStarAverage(routes):
+    
+    stars = 0
+    
+    average = 0
+    
+    for route in routes:
+        stars += route.stars
+        
+    if len(routes) > 0:
+        average = float(stars)/(len(routes))
+    
+    return average
+
+def validateRange(route_range, required_grades, star_requirements):
     valid_routes = []
     required_grades_clone = required_grades[:]
     for route in route_range:
@@ -172,8 +200,13 @@ def validateRange(route_range, required_grades):
             if route_req.routeValid(route):
                 valid_routes += [route]
                 break
+    
+    valid_stars = True
+    
+    for star_requirement in star_requirements:
+        valid_stars = valid_stars and star_requirement.validRange(valid_routes)
 
-    return len(required_grades_clone) == 0, valid_routes
+    return len(required_grades_clone) == 0 and valid_stars, valid_routes
 
 def findRoutes(maxRoute= 1000, minRoute = 0, minStars = 0, maxStars = 10):
     input = open("Boven.txt", "r")
@@ -191,21 +224,35 @@ def findRoutes(maxRoute= 1000, minRoute = 0, minStars = 0, maxStars = 10):
 
     return routes
 
-def findRouteRanges(range_length, required_grades, crag_requirements, remove_non_valid = False):
+def findRouteRanges(range_length, required_grades, crag_requirements, star_requirements = [], remove_non_valid = False):
     ranges = []
+    range_star_averages = []
     ranges_valid_routes = []
     routes = findRoutes()
     for i in range(0, len(routes)):
         route_range = getRange(range_length, routes, i)
-        valid_range, valid_routes = validateRange(route_range, required_grades)
+        valid_range, valid_routes = validateRange(route_range, required_grades, star_requirements)
         if valid_range and crag_requirements.cragValid(route_range[0].crag):
             if remove_non_valid:
                 for i in range(len(route_range)-1, -1, -1):
                     if not route_range[i] in valid_routes:
                         route_range.pop(i)
             
-            ranges += [route_range]
-            ranges_valid_routes += [valid_routes]
+            
+            star_average = getStarAverage(valid_routes)
+            
+            index = 0
+            
+            for j in range(0, len(range_star_averages)):
+                if star_average > range_star_averages[j]:
+                    index = j
+                    break
+                if j == len(range_star_averages) - 1:
+                    index = j + 1
+            
+            ranges.insert(index, route_range)
+            ranges_valid_routes.insert(index,valid_routes)
+            range_star_averages.insert(index, star_average)
     
     clean_ranges(ranges, ranges_valid_routes)
     
