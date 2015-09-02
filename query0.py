@@ -9,10 +9,10 @@ output = open("BovenQuery.txt", "w")
 
 grade_reqs = []
 
-grade_reqs += [RouteRequirement(minimum = 14, maximum = 17, star_requirement = 2, styles = ["Sport"])]
-grade_reqs += [RouteRequirement(minimum = 18, maximum = 19, star_requirement = 2, styles = ["Sport"])]
-grade_reqs += [RouteRequirement(minimum = 20, maximum = 21, star_requirement = 2, styles = ["Sport"])]
-grade_reqs += [RouteRequirement(minimum = 22, maximum = 23, star_requirement = 2, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 14, maximum = 17, star_requirement = 3, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 18, maximum = 19, star_requirement = 3, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 20, maximum = 21, star_requirement = 3, styles = ["Sport"])]
+grade_reqs += [RouteRequirement(minimum = 22, maximum = 23, star_requirement = 3, styles = ["Sport"])]
 
 # grade_reqs += [RouteRequirement(minimum = 14, maximum = 17, star_requirement = 2, styles = ["Sport", "Trad"])]
 # grade_reqs += [RouteRequirement(minimum = 18, maximum = 20, star_requirement = 2, styles = ["Sport", "Trad"])]
@@ -20,10 +20,10 @@ grade_reqs += [RouteRequirement(minimum = 22, maximum = 23, star_requirement = 2
 # grade_reqs += [RouteRequirement(minimum = 21, maximum = 23, star_requirement = 2, styles = ["Sport", "Trad"])]
 
 star_reqs = []
-star_reqs += [StarRequirement(star_count = 4, route_count = 1)]
+star_reqs += [StarRequirement(star_count = 3, route_count = 1)]
 
 
-crag_requirement = CragRequirement(crags = ["The Wonderland Crags"])
+crag_requirement = CragRequirement(crags = [])
 
 ranges = findRouteRanges(5, grade_reqs, crag_requirement, star_requirements = star_reqs, remove_non_valid = True)
 
