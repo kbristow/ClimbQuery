@@ -1,0 +1,114 @@
+{% load staticfiles %}
+<!--Template heavily based on https://github.com/IronSummitMedia/startbootstrap-simple-sidebar-->
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Climb Query</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'ClimbQueryWeb/css/simple-sidebar.css' %}" rel="stylesheet">
+
+    {% block css %}
+    {% endblock %}
+
+    <!-- jQuery -->
+    <script src="{% static 'js/jquery.js' %}"></script>
+
+    <!-- ReactJs -->
+    <script src="{% static 'js/react-0.13.3/react.min.js' %}"></script>
+    <script src="{% static 'js/react-0.13.3/JSXTransformer.js' %}"></script>
+
+    <!-- Cookies -->
+    <script src="{% static 'js/js-cookie-master/js.cookie.js' %}"></script>
+
+    <script type="text/javascript">
+        var csrftoken = Cookies.get('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+
+    </script>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="/ClimbQueryWeb/Index">
+                        Climb Query
+                    </a>
+                </li>
+                <li>
+                    <a href="/ClimbQueryWeb/Routes">Route Search</a>
+                </li>
+                <li>
+                    <a href="#">Climbing Areas</a>
+                </li>
+                <li>
+                    <a href="#">Range Search</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12" id="react_container">
+                        {% block main_content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+
+    <!-- Menu Toggle Script -->
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    </script>
+
+    {% block javascript %}
+    {% endblock %}
+
+</body>
+
+</html>

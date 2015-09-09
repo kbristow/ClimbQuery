@@ -1,0 +1,15 @@
+{% extends "ClimbQueryWeb/base.html" %}
+
+{% load staticfiles %}
+
+{% block css %}
+    <link href="{% static 'js/select2-3.5.4/select2.css' %}" rel="stylesheet">
+    <link href="{% static 'js/select2-3.5.4/select2-bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'ClimbQueryWeb/css/no-more-tables.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block javascript %}
+    <script src="{% static 'js/select2-3.5.4/select2.min.js' %}"></script>
+    <script type="text/jsx" src="{% static 'ClimbQueryWeb/js/routes.js' %}" />
+{% endblock %}
