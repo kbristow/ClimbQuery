@@ -21,22 +21,22 @@ var Route = React.createClass({
         var draws = this._getDraws(fields.draws);
         return (
             <tr>
-                <td data-title="Name">
+                <td>
                     {fields.name}
                 </td>
-                <td data-title="Grade">
+                <td>
                     {fields.grade}
                 </td>
-                <td data-title="Stars">
+                <td>
                     {stars}
                 </td>
-                <td data-title="Style">
+                <td>
                     {fields.climbing_style}
                 </td>
-                <td data-title="Draws">
+                <td>
                     {draws}
                 </td>
-                <td data-title="Description">
+                <td>
                     {fields.description}
                 </td>
             </tr>
@@ -54,33 +54,33 @@ var RouteList = React.createClass({
             );
         });
         return (
-            <table className="no-more-tables table-striped">
-                <thead>
-                    <tr>
-                        <th className="col-lg-2">
-                            Name
-                        </th>
-                        <th className="col-lg-1">
-                            Grade
-                        </th>
-                        <th className="col-lg-1">
-                            Stars
-                        </th>
-                        <th className="col-lg-1">
-                            Climbing Style
-                        </th>
-                        <th className="col-lg-1">
-                            Draws/Anchors
-                        </th>
-                        <th className="col-lg-6">
-                            Description
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {routeNodes}
-                </tbody>
-            </table>
+            <div>
+                <table className="table-striped" id="RouteListTable">
+                    <tbody>
+                        <tr>
+                            <th className="col-lg-2">
+                                Name
+                            </th>
+                            <th className="col-lg-1">
+                                Grade
+                            </th>
+                            <th className="col-lg-1">
+                                Stars
+                            </th>
+                            <th className="col-lg-1">
+                                Climbing Style
+                            </th>
+                            <th className="col-lg-1">
+                                Draws/Anchors
+                            </th>
+                            <th className="col-lg-6">
+                                Description
+                            </th>
+                        </tr>
+                        {routeNodes}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 
@@ -91,9 +91,15 @@ var RouteListBox = React.createClass({
     
     getInitialState: function() {
         return {routes: []};
-    },  
-
-
+    },
+    
+    componentDidMount: function() {
+        $('#RouteListTable').stacktable();
+    },
+    componentDidUpdate: function(){
+        $('#RouteListTable').stacktable();
+    },
+    
     _onSearch: function(){
         var searchOptions = this.refs.routeSearchRef._getSearchOptions();
         this._loadRoutesFromServer(searchOptions);
@@ -140,7 +146,7 @@ var GradeSelector = React.createClass({
 
     componentDidMount: function() {
         $("#" + this.props.id).val(this.props.initial);
-        $("#" + this.props.id).select2({ width: '100%' });
+        $("#" + this.props.id).select2({width: '100%'});
     },
 
     render: function(){
@@ -343,53 +349,44 @@ var RouteSearchBox = React.createClass({
 
     render: function(){
         return(
-            <div className="routeSearchBox">
-                <table className="no-more-tables">
-                    <thead>
-                        <tr>
-                            <th className="col-lg-2">
-                                Climbing Area
-                            </th>
-                            <th className="col-lg-3">
-                                Crag
-                            </th>
-                            <th className="col-lg-1">
-                                Minimum Grade
-                            </th>
-                            <th className="col-lg-1">
-                                Maximum Grade
-                            </th>
-                            <th className="col-lg-1">
-                                Minimum Stars
-                            </th>
-                            <th className="col-lg-1">
-
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-title="Climbing Area">
-                                <ClimbingAreaSearch className="col-lg-2" id="climbingAreaSelect" url="/ClimbQueryService/ClimbingArea/" ref="climbingAreaSelectRef" />
-                            </td>
-                            <td data-title="Crag">
-                                <CragSearch className="col-lg-3" id="cragSelect" url="/ClimbQueryService/Crag/" ref="cragSelectRef" />
-                            </td>
-                            <td data-title="Minimum Grade">
-                                <GradeSelector className="col-lg-1" id="minGradeSelector" initial="1"/>
-                            </td>
-                            <td data-title="Maximum Grade">
-                                <GradeSelector className="col-lg-1" id="maxGradeSelector" initial="40"/>
-                            </td>
-                            <td data-title="Minimum Stars">
-                                <StarSelector className="col-lg-1" id="minStarSelector"/>
-                            </td>
-                            <td>
-                                <SearchButton className="btn btn-default" onClick={this.props.onSearch}/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                <dl>
+                    <dt>
+                        Climbing Area
+                    </dt>
+                    <dd>
+                        <ClimbingAreaSearch id="climbingAreaSelect" url="/ClimbQueryService/ClimbingArea/" ref="climbingAreaSelectRef" />
+                    </dd>
+                    
+                    <dt>
+                        Crag
+                    </dt>
+                    <dd>
+                        <CragSearch id="cragSelect" url="/ClimbQueryService/Crag/" ref="cragSelectRef" />
+                    </dd>
+                    
+                    <dt>
+                        Minimum Grade
+                    </dt>
+                    <dd>
+                        <GradeSelector id="minGradeSelector" initial="1"/>
+                    </dd>
+                    
+                    <dt>
+                        Maximum Grade
+                    </dt>
+                    <dd>
+                        <GradeSelector id="maxGradeSelector" initial="40"/>
+                    </dd>
+                    <dt>
+                        Minimum Stars
+                    </dt>
+                    <dd>
+                        <StarSelector id="minStarSelector"/>
+                    </dd>
+                </dl>
+                <br/>
+                <SearchButton className="btn btn-default" onClick={this.props.onSearch}/>
             </div>
         );
     }
