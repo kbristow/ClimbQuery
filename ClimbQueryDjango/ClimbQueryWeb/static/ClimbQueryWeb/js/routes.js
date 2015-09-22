@@ -145,8 +145,9 @@ var GradeSelector = React.createClass({
     },
 
     componentDidMount: function() {
-        $("#" + this.props.id).val(this.props.initial);
-        $("#" + this.props.id).select2({width: '100%'});
+        var selector = $("#" + this.props.id);
+        selector.val(this.props.initial);
+        selector.select2({width: '100%'});
     },
 
     render: function(){
@@ -244,6 +245,7 @@ var ClimbingAreaSearch = React.createClass({
 
 });
 
+
 var CragSearch = React.createClass({
 
     getInitialState: function() {
@@ -296,7 +298,7 @@ var CragSearch = React.createClass({
         climbingArea = typeof climbingArea !== 'undefined' ? climbingArea : "";
         if (climbingArea!==""){
             var select2 = $("#" + this.props.id).select2({ width: '100%', allowClear: true}).data("select2");
-            var requestData = {climbingArea: climbingArea}
+            var requestData = {climbingArea: climbingArea};
             $.ajax({
                 method: "POST",
                 url: this.props.url,
@@ -315,7 +317,7 @@ var CragSearch = React.createClass({
             });
         }
     },
-    
+
     render: function(){
         return(
             <select className={this.props.className} id={this.props.id} multiple="multiple" placeholder="Select a Crag">
@@ -329,8 +331,9 @@ var CragSearch = React.createClass({
 var RouteSearchBox = React.createClass({
 
     componentDidMount: function() {
-        var select2 = $("#climbingAreaSelect").select2().data("select2");
-        $("#climbingAreaSelect").on("change", this._climbingAreaSelectChange);
+        var climbingAreaSelect =  $("#climbingAreaSelect");
+        var select2 = climbingAreaSelect.select2().data("select2");
+        climbingAreaSelect.on("change", this._climbingAreaSelectChange);
     },
 
     _climbingAreaSelectChange: function(){

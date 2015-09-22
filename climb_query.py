@@ -32,23 +32,23 @@ def validateRange(route_range, required_grades, star_requirements):
     required_grades_clone = required_grades[:]
     for route in route_range:
         for i in range(len(required_grades_clone)-1, -1, -1):
-            if required_grades_clone[i].routeValid(route):
+            if required_grades_clone[i].route_valid(route):
                 required_grades_clone.pop(i)
         for route_req in required_grades:  
-            if route_req.routeValid(route):
+            if route_req.route_valid(route):
                 valid_routes += [route]
                 break
     
     valid_stars = True
     
     for star_requirement in star_requirements:
-        valid_stars = valid_stars and star_requirement.validRange(valid_routes)
+        valid_stars = valid_stars and star_requirement.valid_range(valid_routes)
 
     return len(required_grades_clone) == 0 and valid_stars, valid_routes
 
 def findRoutes(route_interface, maxRoute= 1000, minRoute = 0, minStars = 0, maxStars = 10):
     #input = open("Boven.txt", "r")
-    all_routes = route_interface.getRoutes()
+    all_routes = route_interface.get_routes()
     current_crag = None
     routes = []
     for route in all_routes:

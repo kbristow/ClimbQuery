@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class ClimbingArea(models.Model):
     name = models.TextField()
@@ -15,6 +16,7 @@ class ClimbingArea(models.Model):
         return climbing_area
     """
 
+
 class Crag(models.Model):
     name = models.TextField()
     parent_crag = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
@@ -29,6 +31,7 @@ class Crag(models.Model):
         return crag
     """
 
+
 class Route(models.Model):
     name = models.TextField()
     pitch = models.IntegerField()
@@ -39,7 +42,7 @@ class Route(models.Model):
     draws = models.IntegerField()
     climbing_style = models.TextField()
     description = models.TextField()
-    
+
     """
     @classmethod
     def create(cls, name, crag, grade, stars, description, climbing_style, crag_location, draws = 0, pitch = 1):

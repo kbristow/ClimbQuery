@@ -108,9 +108,9 @@ class LoadBoven(View):
             crag_list[i] = self.saveCrag(crag_list[i])
 
 
-        route_interface = route_interfaces.Boven_Route_Interface(crag_list)
+        route_interface = route_interfaces.BovenRouteInterface(crag_list)
 
-        routes = route_interface.getRoutes()
+        routes = route_interface.get_routes()
         for i in range(0, len(routes)):
             existing_routes = models.Route.objects.filter(crag = routes[i].crag, name = routes[i].name)
             if len(existing_routes) == 0:
@@ -153,9 +153,9 @@ class LoadBronkies(View):
         for i in range(0, len(crag_list)):
             crag_list[i] = self.saveCrag(crag_list[i])
 
-        route_interface = route_interfaces.Bronkies_Route_Interface(crag_list)
+        route_interface = route_interfaces.BronkiesRouteInterface(crag_list)
 
-        routes = route_interface.getRoutes()
+        routes = route_interface.get_routes()
         for i in range(0, len(routes)):
             existing_routes = models.Route.objects.filter(crag = routes[i].crag, name = routes[i].name)
             if len(existing_routes) == 0:
