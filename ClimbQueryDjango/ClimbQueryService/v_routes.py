@@ -25,7 +25,7 @@ class GetRoutes(View):
             pk=data["climbingArea"]).first())
         valid_crags = crag_requirement.get_valid_crags()
         routes = find_routes(valid_crags=valid_crags, max_grade=int(data["maxGrade"]), min_grade=int(data["minGrade"]),
-                             min_stars=int(data["minStars"]))
+                             min_stars=int(data["minStars"]), climbing_style=data["style"])
         return HttpResponse(serializers.serialize("json", routes), content_type='application/json')
 
 
@@ -64,9 +64,12 @@ def get_valid_crags(climbing_area, crags):
     return valid_crags
 
 
-def find_routes(valid_crags, max_grade=1000, min_grade=0, min_stars=0):
+def find_routes(valid_crags, max_grade=1000, min_grade=0, min_stars=0, climbing_style=""):
     routes = models.Route.objects.filter(grade__gte=min_grade, grade__lte=max_grade, stars__gte=min_stars,
-                                         crag__in=valid_crags)
+                                         crag__in=valid_crags).order_by("crag", "crag_location")
+    if len(climbing_style) is not 0:
+        routes = routes.filter(climbing_style=climbing_style)
+
     return routes
 
 

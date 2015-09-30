@@ -25,6 +25,9 @@ var Route = React.createClass({
                     {fields.name}
                 </td>
                 <td>
+                    {this.props.getCragCallback(fields.crag)}
+                </td>
+                <td>
                     {fields.grade}
                 </td>
                 <td>
@@ -47,12 +50,19 @@ var Route = React.createClass({
 
 var RouteList = React.createClass({
 
+    _getCrag: function(cragId){
+        if(this.props.crags.hasOwnProperty(cragId)){
+            return this.props.crags[cragId];
+        }
+        return cragId;
+    },
+
     render: function(){
-        var routeNodes = this.props.data.map(function (route){
+        var routeNodes = this.props.routes.map(function (route){
             return (
-            <Route route={route}/>
+            <Route route={route} getCragCallback={this._getCrag}/>
             );
-        });
+        }.bind(this));
         return (
             <div>
                 <table className="table-striped" id="RouteListTable">
@@ -60,6 +70,9 @@ var RouteList = React.createClass({
                         <tr>
                             <th className="col-lg-2">
                                 Name
+                            </th>
+                            <th className="col-lg-2">
+                                Crag
                             </th>
                             <th className="col-lg-1">
                                 Grade
@@ -73,7 +86,7 @@ var RouteList = React.createClass({
                             <th className="col-lg-1">
                                 Draws/Anchors
                             </th>
-                            <th className="col-lg-6">
+                            <th className="col-lg-4">
                                 Description
                             </th>
                         </tr>
@@ -90,7 +103,7 @@ var RouteList = React.createClass({
 var RouteListBox = React.createClass({
     
     getInitialState: function() {
-        return {routes: []};
+        return {routes: [], crags: {}};
     },
     
     componentDidMount: function() {
@@ -107,7 +120,7 @@ var RouteListBox = React.createClass({
     _loadRoutesFromServer: function(searchOptions) {
         $.ajax({
             method: "POST",
-            url: this.props.url,
+            url: this.props.urlRoutes,
             data: JSON.stringify(searchOptions),
             dataType: 'json',
             cache: false,
@@ -119,15 +132,63 @@ var RouteListBox = React.createClass({
             }.bind(this)
         });
     },
-    
+    _getCragData: function (data){
+        var pkCragMap = {};
+        for (var i = 0; i < data.length; i++){
+            pkCragMap[data[i].pk] = data[i];
+        }
+        return pkCragMap;
+    },
+    _convertToCragMap : function(cragData){
+        var cragMap = {};
+        for (var i in cragData){
+            cragMap[cragData[i].pk] = this._pullFullName(cragData[i], cragData);
+        }
+        return cragMap;
+    },
+    _pullFullName : function(crag, cragMap){
+        if (crag.fields.parent_crag == null){
+            return crag.fields.name;
+        }
+        else{
+            return this._pullFullName(cragMap[crag.fields.parent_crag], cragMap) + " / " + crag.fields.name;
+        }
+    },
+    _loadCragsFromServer: function(climbingArea){
+        var requestData = {climbingArea: climbingArea};
+        $.ajax({
+            method: "POST",
+            url: this.props.urlCrags,
+            data: JSON.stringify(requestData),
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                var cragData = this._getCragData(data);
+                var cragMap = this._convertToCragMap(cragData);
+                this.setState({crags: cragMap});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
     
     render: function() {
         return (
             <div className="routeListBox">
                 <h1>Search Details</h1>
-                <RouteSearchBox onSearch={this._onSearch} ref="routeSearchRef"/>
+                <RouteSearchBox
+                    onSearch={this._onSearch}
+                    ref="routeSearchRef"
+                    updateCragsCallback={this._loadCragsFromServer}
+                    crags = {this.state.crags}
+                />
                 <h1>Routes</h1>
-                <RouteList data = {this.state.routes}/>
+                <RouteList
+                    routes = {this.state.routes}
+                    crags = {this.state.crags}
+                />
             </div>
         );
     }
@@ -185,6 +246,36 @@ var StarSelector = React.createClass({
 });
 
 
+var StyleSelector = React.createClass({
+
+    getInitialState: function() {
+        var styleOptions = {
+            "Any" : "",
+            "Sport" : "Sport",
+            "Trad" : "Trad"
+        };
+        var styles = [];
+        for (var key in styleOptions){
+            styles.push(<option value={styleOptions[key]}>{key}</option>);
+        }
+        return {styles: styles};
+    },
+
+    componentDidMount: function() {
+        $("#" + this.props.id).select2({ width: '100%' });
+    },
+
+    render: function(){
+        return(
+            <select className={this.props.className} id={this.props.id}>
+                {this.state.styles}
+            </select>
+        );
+    }
+
+});
+
+
 var SearchButton = React.createClass({
 
     render: function(){
@@ -201,10 +292,15 @@ var ClimbingAreaSearch = React.createClass({
         return {climbingAreas: []};
     },
 
-    componentDidMount: function() {
+    componentDidMount: function(){
+        var climbingAreaSelect =  $("#" + this.props.id);
+        var select2 = climbingAreaSelect.select2().data("select2");
+        climbingAreaSelect.on("change", this._selectorOnChange);
         this._loadClimbingAreasFromServer();
     },
-
+    _selectorOnChange:function(){
+        this.props.changeCallback($("#climbingAreaSelect").val());
+    },
     _createSelectOptions: function(data){
         //Empty option for placeholder
         var options = [<option></option>];
@@ -215,6 +311,7 @@ var ClimbingAreaSearch = React.createClass({
         return options;
     },
     _loadClimbingAreasFromServer: function(){
+        //TODO: Need to move this up in the component hierarchy?
         $.ajax({
             url: this.props.url,
             dataType: 'json',
@@ -248,10 +345,6 @@ var ClimbingAreaSearch = React.createClass({
 
 var CragSearch = React.createClass({
 
-    getInitialState: function() {
-        return {crags: [], climbingArea: ""};
-    },
-
     componentDidMount: function() {
         //Turn select into select2 box
         var select2 = $("#" + this.props.id).select2({ width: '100%', allowClear: true}).data("select2");
@@ -264,28 +357,13 @@ var CragSearch = React.createClass({
         return 1;
       return 0;
     },
-    _getCragMap: function (data){
-        var pkCragMap = {};
-        for (var i = 0; i < data.length; i++){
-            pkCragMap[data[i].pk] = data[i];
-        }
-        return pkCragMap;
-    },
     _convertToFullCragNames : function(cragMap){
         var crags = [];
         for (var i in cragMap){
-            crags.push({id: i, text: this._pullFullName(cragMap[i], cragMap)});
+            crags.push({id: i, text: cragMap[i]});
         }
         crags.sort(this._compareCragResult);
         return crags;
-    },
-    _pullFullName : function(crag, cragMap){
-        if (crag.fields.parent_crag == null){
-            return crag.fields.name;
-        }
-        else{
-            return this._pullFullName(cragMap[crag.fields.parent_crag], cragMap) + " / " + crag.fields.name;
-        }
     },
     _createSelectOptions: function(data){
         var options = [];
@@ -294,34 +372,13 @@ var CragSearch = React.createClass({
         }
         return options;
     },
-    _loadCragsFromServer: function(climbingArea){
-        climbingArea = typeof climbingArea !== 'undefined' ? climbingArea : "";
-        if (climbingArea!==""){
-            var select2 = $("#" + this.props.id).select2({ width: '100%', allowClear: true}).data("select2");
-            var requestData = {climbingArea: climbingArea};
-            $.ajax({
-                method: "POST",
-                url: this.props.url,
-                data: JSON.stringify(requestData),
-                dataType: 'json',
-                cache: false,
-                success: function(data) {
-                    var cragMap = this._getCragMap(data);
-                    var fullCragNames = this._convertToFullCragNames(cragMap);
-                    var crags = this._createSelectOptions(fullCragNames);
-                    this.setState({crags: crags});
-                }.bind(this),
-                error: function(xhr, status, err) {
-                    console.error(this.props.url, status, err.toString());
-                }.bind(this)
-            });
-        }
-    },
 
     render: function(){
+        var sortedCrags = this._convertToFullCragNames(this.props.crags);
+        var cragOptions = this._createSelectOptions(sortedCrags);
         return(
             <select className={this.props.className} id={this.props.id} multiple="multiple" placeholder="Select a Crag">
-                {this.state.crags}
+                {cragOptions}
             </select>
         );
     }
@@ -330,15 +387,8 @@ var CragSearch = React.createClass({
 
 var RouteSearchBox = React.createClass({
 
-    componentDidMount: function() {
-        var climbingAreaSelect =  $("#climbingAreaSelect");
-        var select2 = climbingAreaSelect.select2().data("select2");
-        climbingAreaSelect.on("change", this._climbingAreaSelectChange);
-    },
-
-    _climbingAreaSelectChange: function(){
-        var climbingArea = this.refs.climbingAreaSelectRef._getSelectedClimbingArea();
-        this.refs.cragSelectRef._loadCragsFromServer(climbingArea);
+    _climbingAreaSelectChange: function(climbingArea){
+        this.props.updateCragsCallback(climbingArea);
     },
     _getSearchOptions: function(){
         var searchOptions = {};
@@ -347,6 +397,7 @@ var RouteSearchBox = React.createClass({
         searchOptions["minGrade"] = $("#minGradeSelector").val();
         searchOptions["maxGrade"] = $("#maxGradeSelector").val();
         searchOptions["minStars"] = $("#minStarSelector").val();
+        searchOptions["style"] = $("#styleSelector").val();
         return searchOptions;
     },
 
@@ -358,23 +409,30 @@ var RouteSearchBox = React.createClass({
                         Climbing Area
                     </dt>
                     <dd>
-                        <ClimbingAreaSearch id="climbingAreaSelect" url="/ClimbQueryService/ClimbingArea/" ref="climbingAreaSelectRef" />
+                        <ClimbingAreaSearch id="climbingAreaSelect" url="/ClimbQueryService/ClimbingArea/" changeCallback={this._climbingAreaSelectChange} ref="climbingAreaSelectRef" />
                     </dd>
                     
                     <dt>
                         Crag
                     </dt>
                     <dd>
-                        <CragSearch id="cragSelect" url="/ClimbQueryService/Crag/" ref="cragSelectRef" />
+                        <CragSearch id="cragSelect" crags={this.props.crags} />
                     </dd>
-                    
+
+                    <dt>
+                        Climbing Style
+                    </dt>
+                    <dd>
+                        <StyleSelector id="styleSelector" initial="40"/>
+                    </dd>
+
                     <dt>
                         Minimum Grade
                     </dt>
                     <dd>
                         <GradeSelector id="minGradeSelector" initial="1"/>
                     </dd>
-                    
+
                     <dt>
                         Maximum Grade
                     </dt>
@@ -397,6 +455,6 @@ var RouteSearchBox = React.createClass({
 });
 
 React.render(
-    <RouteListBox url="/ClimbQueryService/Route/"/>,
+    <RouteListBox urlRoutes="/ClimbQueryService/Route/" urlCrags="/ClimbQueryService/Crag/"/>,
     document.getElementById('react_container')
 );
