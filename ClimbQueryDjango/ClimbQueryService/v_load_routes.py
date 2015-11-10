@@ -90,6 +90,7 @@ class LoadBoven(View):
 
         crag_list += [models.Crag(name = "The Coven", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Ivory Towers", parent_crag = main_crag, climbing_area = climbing_area)]
+        crag_list += [models.Crag(name = "Flying Is Fun", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "The Other Side", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "The A.C.R.A. Wall", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "WB Wall", parent_crag = main_crag, climbing_area = climbing_area)]
