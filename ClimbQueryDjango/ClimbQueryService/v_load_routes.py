@@ -23,6 +23,14 @@ class LoadBoven(View):
             climbing_area = climbing_areas[0]
 
         crag_list = []
+        
+        main_crag = models.Crag(name = "The Mayhem Crags", climbing_area = climbing_area)
+        main_crag = self.saveCrag(main_crag)
+        
+        crag_list += [models.Crag(name = "Corruption Crags", parent_crag = main_crag, climbing_area = climbing_area)]
+        crag_list += [models.Crag(name = "Burning Man Walls", parent_crag = main_crag, climbing_area = climbing_area)]
+        crag_list += [models.Crag(name = "Animal Farm Sector", parent_crag = main_crag, climbing_area = climbing_area)]
+        
 
         main_crag = models.Crag(name = "The Wonderland Crags", climbing_area = climbing_area)
         main_crag = self.saveCrag(main_crag)
@@ -30,7 +38,6 @@ class LoadBoven(View):
         sub_crag = models.Crag(name = "Tranquilitas Crag", parent_crag = main_crag, climbing_area = climbing_area)
         sub_crag = self.saveCrag(sub_crag)
 
-        crag_list += []
         crag_list += [models.Crag(name = "Als Bells Area", parent_crag = sub_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "The Creche", parent_crag = sub_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Good And Evil Area", parent_crag = sub_crag, climbing_area = climbing_area)]
@@ -88,6 +95,7 @@ class LoadBoven(View):
         main_crag = models.Crag(name = "Sport Valley Crags", climbing_area = climbing_area)
         main_crag = self.saveCrag(main_crag)
 
+        crag_list += [models.Crag(name = "The Pasture", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "The Coven", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Ivory Towers", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Flying Is Fun", parent_crag = main_crag, climbing_area = climbing_area)]
