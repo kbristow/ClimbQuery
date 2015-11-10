@@ -17,7 +17,7 @@ class LoadBoven(View):
             climbing_area= models.ClimbingArea(
                 name = "Waterval Boven", country = "South Africa", province = "Mpumalanga"
                 )
-            
+
             climbing_area.save()
         else:
             climbing_area = climbing_areas[0]
@@ -37,7 +37,6 @@ class LoadBoven(View):
         crag_list += [models.Crag(name = "Malaria Area", parent_crag = sub_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Grunt Area", parent_crag = sub_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Rubiks Cube Boulder", parent_crag = sub_crag, climbing_area = climbing_area)]
-        crag_list += [models.Crag(name = "Als Bells Area", parent_crag = sub_crag, climbing_area = climbing_area)]
 
         crag_list += [models.Crag(name = "Baboon Buttress", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "The God No! Wall", parent_crag = main_crag, climbing_area = climbing_area)]
@@ -98,6 +97,7 @@ class LoadBoven(View):
         crag_list += [models.Crag(name = "The East End", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "A good crag to do some trainspotting", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "Toon Town", parent_crag = main_crag, climbing_area = climbing_area)]
+        crag_list += [models.Crag(name = "The Wild Side", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "ZASM Tunnel entrance - (East)", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "The Junkyard", parent_crag = main_crag, climbing_area = climbing_area)]
         crag_list += [models.Crag(name = "ZASM Tunnel entrance - (West)", parent_crag = main_crag, climbing_area = climbing_area)]
@@ -140,7 +140,7 @@ class LoadBronkies(View):
             climbing_area= models.ClimbingArea(
                 name = "Bronkies", country = "South Africa", province = "Gauteng"
                 )
-            
+
             climbing_area.save()
         else:
             climbing_area = climbing_areas[0]
