@@ -29,7 +29,7 @@ class BovenRouteInterface(RouteInterface):
         return None
 
     def _get_route(self, line, crag):
-        route_regex = r'(.*)\s+([0-9]+)\s*(\*+)\s*(?:\[|\()(.*?)(?:\]|\))(.*)(?:\n|$)'
+        route_regex = r'(.*)\s+([0-9]+)\s*(\*+)\s*(?:(?:\[|\()(.*?)(?:\]|\)))?([\s,\S]*?)$'
 
         route_match = re.search(route_regex, line, re.M | re.I)
 
@@ -43,11 +43,12 @@ class BovenRouteInterface(RouteInterface):
                 style = "Trad"
             else:
                 style = "Sport"
-                draw_match = re.search(r"([0-9]+)", style_match)
-                if draw_match is not None:
-                    draws = int(draw_match.group(1))
+                if style_match is not None:
+                    draw_match = re.search(r"([0-9]+)", style_match)
+                    if draw_match is not None:
+                        draws = int(draw_match.group(1))
 
-            description = route_match.group(5).strip()
+            description = route_match.group(5).strip().replace("\n","")
             if description.startswith('.'):
                 description = description[1:].strip()
 
@@ -66,16 +67,21 @@ class BovenRouteInterface(RouteInterface):
     def get_routes(self):
         routes = []
         current_crag = None
+        running_line = ""
         for line in self.file_handle:
             line = line.decode('utf-8').strip()
+            running_line += line + " "
+            
             new_crag = self._get_crag(line)
             if new_crag is not None:
                 current_crag = new_crag
                 self.crag_location = 1
-            else:
-                route = self._get_route(line, current_crag)
+                running_line = ""
+            elif len(line) == 0:
+                route = self._get_route(running_line, current_crag)
                 if route is not None:
                     routes += [route]
+                running_line = ""
 
         return routes
 
