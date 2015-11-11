@@ -1,96 +1,111 @@
-var Route = React.createClass({
+var RouteBuilder = function RouteBuilder(){
 
-    _getStarRepresentation: function(nStars){
+    function _getStarRepresentation (nStars){
         var stars = [];
         for (var i = 0; i < nStars; i ++){
             stars.push(<span className='glyphicon glyphicon-star'></span>);
         }
         return stars;
-    },
-    _getDraws: function(nDraws){
+    }
+
+    function _getDraws(nDraws){
         var draws = nDraws;
         if (parseInt(nDraws) == 0){
             draws = '-';
         }
         return draws;
-    },
-
-    render: function() {
-        var fields = this.props.route.fields;
-        var stars = this._getStarRepresentation(fields.stars);
-        var draws = this._getDraws(fields.draws);
-        return (
-            <tr>
-                <td>
-                    {fields.name}
-                </td>
-                <td>
-                    {this.props.getCragCallback(fields.crag)}
-                </td>
-                <td>
-                    {fields.grade}
-                </td>
-                <td>
-                    {stars}
-                </td>
-                <td>
-                    {fields.climbing_style}
-                </td>
-                <td>
-                    {draws}
-                </td>
-                <td>
-                    {fields.description}
-                </td>
-            </tr>
-        );
     }
 
-});
+    function getRoute(fields, cragName) {
+        //var fields = this.props.route.fields;
+        var stars = _getStarRepresentation(fields.stars);
+        var draws = _getDraws(fields.draws);
+        return {
+            name: fields.name,
+            crag: cragName,
+            grade: fields.grade,
+            stars: stars,
+            style: fields.climbingStyle,
+            draws: draws,
+            description: fields.description
+        };
+    }
 
-var RouteList = React.createClass({
+    return {
+        getRouteData: getRoute
+    };
 
-    _getCrag: function(cragId){
-        if(this.props.crags.hasOwnProperty(cragId)){
+};
+
+var RouteList;
+RouteList = React.createClass({
+
+    getInitialState: function () {
+        return {
+            routeRows: [],
+            headers: {
+                name: "Route Name",
+                crag: "Crag",
+                grade: "Grade",
+                stars: "Stars",
+                style: "Climbing Style",
+                draws: "Draws/Anchors",
+                description: "Description"
+            }
+        };
+    },
+
+    componentWillReceiveProps: function (nextProps){
+        var routeBuilder = RouteBuilder();
+        var routeTemp = [];
+        for (var i = 0; i < nextProps.routes.length; i ++){
+            var route = nextProps.routes[i];
+            routeTemp.push(routeBuilder.getRouteData(route.fields, this._getCrag(route.fields.crag)));
+        }
+        this.setState({
+            routeRows: routeTemp
+        });
+    },
+
+    _getCrag: function (cragId) {
+        if (this.props.crags.hasOwnProperty(cragId)) {
             return this.props.crags[cragId];
         }
         return cragId;
     },
 
-    render: function(){
-        var routeNodes = this.props.routes.map(function (route){
-            return (
-            <Route route={route} getCragCallback={this._getCrag}/>
-            );
-        }.bind(this));
+    _head: function() {
+        var columnValues = [];
+        for (var header in this.state.headers){
+            columnValues.push(<th>{this.state.headers[header]}</th>);
+        }
+        return (
+            <tr>{columnValues}</tr>
+        );
+    },
+
+    _rows: function() {
+        var returnValues = [];
+        for (var i = 0; i < this.state.routeRows.length; i ++ ){
+            var row = this.state.routeRows[i];
+            var columnValues = [];
+            for (var header in this.state.headers){
+                columnValues.push(<td data-label={this.state.headers[header]}>{row[header]}</td>);
+            }
+            returnValues.push(<tr>{columnValues}</tr>);
+        }
+       return returnValues;
+    },
+
+    render: function () {
         return (
             <div>
-                <table className="table-striped" id="RouteListTable">
+                <table className="responsive-table table-striped" id="RouteListTable">
+                    <thead>
+                    {this._head()}
+                    </thead>
                     <tbody>
-                        <tr>
-                            <th className="col-lg-2">
-                                Name
-                            </th>
-                            <th className="col-lg-2">
-                                Crag
-                            </th>
-                            <th className="col-lg-1">
-                                Grade
-                            </th>
-                            <th className="col-lg-1">
-                                Stars
-                            </th>
-                            <th className="col-lg-1">
-                                Climbing Style
-                            </th>
-                            <th className="col-lg-1">
-                                Draws/Anchors
-                            </th>
-                            <th className="col-lg-4">
-                                Description
-                            </th>
-                        </tr>
-                        {routeNodes}
+                    {this._rows()}
                     </tbody>
                 </table>
             </div>
@@ -104,13 +119,6 @@ var RouteListBox = React.createClass({
     
     getInitialState: function() {
         return {routes: [], crags: {}};
-    },
-    
-    componentDidMount: function() {
-        $('#RouteListTable').stacktable();
-    },
-    componentDidUpdate: function(){
-        $('#RouteListTable').stacktable();
     },
     
     _onSearch: function(){
@@ -327,9 +335,6 @@ var ClimbingAreaSearch = React.createClass({
                 console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
-    },
-    _getSelectedClimbingArea:function(){
-        return $("#" + this.props.id).val();
     },
     
     render: function(){
