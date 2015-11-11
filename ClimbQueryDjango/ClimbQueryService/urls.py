@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^ClimbingArea/', v_climbingarea.GetClimbingAreas.as_view()),
     url(r'^Crag/', v_crags.Crags.as_view()),
     url(r'^Route/', v_routes.GetRoutes.as_view()),
+    url(r'^RouteRange/', v_routes.GetRange.as_view()),
     url(r'^LoadRoutes/Bronkies', v_load_routes.LoadBronkies.as_view()),
     url(r'^LoadRoutes/Boven', v_load_routes.LoadBoven.as_view())
 )

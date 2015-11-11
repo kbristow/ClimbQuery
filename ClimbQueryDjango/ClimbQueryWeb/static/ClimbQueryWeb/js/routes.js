@@ -1,3 +1,6 @@
+/* global React */
+/* global enquire */
+
 var RouteBuilder = function RouteBuilder(){
 
     function _getStarRepresentation (nStars){
@@ -25,7 +28,7 @@ var RouteBuilder = function RouteBuilder(){
             crag: cragName,
             grade: fields.grade,
             stars: stars,
-            style: fields.climbingStyle,
+            style: fields.climbing_style,
             draws: draws,
             description: fields.description
         };
@@ -96,20 +99,43 @@ RouteList = React.createClass({
         }
        return returnValues;
     },
+    
+    _getTableRepresentation: function(){
+        return (
+                <div>
+                    <table className="responsive-table" id="RouteListTable">
+                        <thead>
+                        {this._head()}
+                        </thead>
+                        <tbody>
+                        {this._rows()}
+                        </tbody>
+                    </table>
+                </div>
+            );
+    },
+    
+    _getPageRepresentation: function(){
+        var returnValues = [];
+        for (var i = 0; i < this.state.routeRows.length; i ++ ){
+            var row = this.state.routeRows[i];
+            var columnValues = [];
+            for (var header in this.state.headers){
+                columnValues.push(<dt>{this.state.headers[header]}</dt>);
+                columnValues.push(<dd>{row[header]}</dd>);
+            }
+            returnValues.push(<dl>{columnValues}</dl>);
+        }
+        return (<div>{returnValues}</div>);
+    },
 
     render: function () {
-        return (
-            <div>
-                <table className="responsive-table table-striped" id="RouteListTable">
-                    <thead>
-                    {this._head()}
-                    </thead>
-                    <tbody>
-                    {this._rows()}
-                    </tbody>
-                </table>
-            </div>
-        );
+        if (this.props.responsiveSetting == 0){
+            return this._getTableRepresentation();
+        }
+        else{
+            return this._getPageRepresentation();
+        }
     }
 
 });
@@ -118,7 +144,19 @@ RouteList = React.createClass({
 var RouteListBox = React.createClass({
     
     getInitialState: function() {
-        return {routes: [], crags: {}};
+        return {routes: [], crags: {}, responsiveSetting: 0};
+    },
+    
+    componentDidMount: function() {
+        var _this = this;
+        enquire.register("(min-width: 900px)", {
+            match : function() {
+                _this.setState({responsiveSetting: 0});
+            },  
+            unmatch : function() {
+                _this.setState({responsiveSetting: 1});
+            }
+        });
     },
     
     _onSearch: function(){
@@ -183,6 +221,11 @@ var RouteListBox = React.createClass({
 
     
     render: function() {
+        var responsiveSetting = this.state.responsiveSetting;
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            responsiveSetting = 1;
+        }
+        
         return (
             <div className="routeListBox">
                 <h1>Search Details</h1>
@@ -196,6 +239,7 @@ var RouteListBox = React.createClass({
                 <RouteList
                     routes = {this.state.routes}
                     crags = {this.state.crags}
+                    responsiveSetting = {responsiveSetting}
                 />
             </div>
         );
