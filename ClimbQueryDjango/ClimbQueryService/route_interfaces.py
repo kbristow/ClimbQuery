@@ -29,7 +29,7 @@ class BovenRouteInterface(RouteInterface):
         return None
 
     def _get_route(self, line, crag):
-        route_regex = r'(.*)\s+([0-9]+)\s*(\*+)\s*(?:(?:\[|\()(.*?)(?:\]|\)))?([\s,\S]*?)$'
+        route_regex = r'(.*?)\s+([0-9]+)\s*(\*+)\s*(?:(?:\[|\()(.*?)(?:\]|\)))?([\s,\S]*?)$'
 
         route_match = re.search(route_regex, line, re.M | re.I)
 

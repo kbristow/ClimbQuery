@@ -16,3 +16,8 @@ class Routes(View):
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
         return render(request, 'ClimbQueryWeb/routes.html', {})
+        
+class Ranges(View):
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request):
+        return render(request, 'ClimbQueryWeb/route_range.html', {})

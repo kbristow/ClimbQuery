@@ -30,21 +30,19 @@ class GetRoutes(View):
 
 
 class GetRange(View):
-    def get(self, request):
+    def post(self, request):
         # Currently hardcoded for some testing purposes
         crag_requirement = CragRequirement(crags=[], climbing_area=models.ClimbingArea.objects.filter(
             name="Waterval Boven").first())
         # valid_crags = crag_requirement.getValidCrags()
 
         grade_reqs = []
-        grade_reqs += [RouteRequirement(min_grade=14, max_grade=17, min_stars=2, styles=["Sport"])]
-        grade_reqs += [RouteRequirement(min_grade=18, max_grade=19, min_stars=2, styles=["Sport"])]
-        grade_reqs += [RouteRequirement(min_grade=20, max_grade=21, min_stars=4, styles=["Sport"])]
+        grade_reqs += [RouteRequirement(min_grade=15, max_grade=19, min_stars=1, styles=["Sport"])]
 
         star_reqs = []
-        star_reqs += [StarRequirement(min_stars=3, route_count=2)]
+        star_reqs += [StarRequirement(min_stars=1, route_count=4)]
 
-        route_ranges = find_route_ranges(5, required_grades=grade_reqs, crag_requirements=crag_requirement,
+        route_ranges = find_route_ranges(6, required_grades=grade_reqs, crag_requirements=crag_requirement,
                                          star_requirements=star_reqs, remove_non_valid=True)
 
         json_data = []

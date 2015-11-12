@@ -19,5 +19,6 @@ import views
 
 urlpatterns = patterns('',
     url(r'^Index', views.Index.as_view()),
-    url(r'^Routes', views.Routes.as_view())
+    url(r'^Routes', views.Routes.as_view()),
+    url(r'^Ranges', views.Ranges.as_view())
 )
